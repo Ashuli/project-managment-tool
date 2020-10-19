@@ -1,0 +1,361 @@
+*,
+*:after,
+*:before {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  background: #e2e8f0;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter .modal-dialog,
+.fade-leave-to .modal-dialog {
+  transform: translateY(-20%);
+}
+
+.modal-backdrop {
+  background: rgba(27, 31, 60, 0.54);
+  /* background: rgba(250, 250, 250, 0.8); */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+}
+
+.modal-dialog {
+  width: 30rem;
+  background: rgb(255, 255, 255);
+  /* padding: 1.5rem; */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-radius: 0.3rem;
+  transition: 0.5s;
+  position: relative;
+  pointer-events: auto;
+}
+.modal-header {
+  padding: 0;
+}
+#register .modal-dialog {
+  /* max-height: 100%; */
+  max-width: var(--width);
+  width: 90%;
+  border-radius: 3px;
+  -webkit-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  outline: none;
+  height: 1.2rem;
+  width: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close svg {
+  fill: rgb(150, 150, 150);
+}
+
+.modal-close svg:hover {
+  fill: rgb(100, 100, 100);
+}
+
+.modal-title {
+  font-weight: bold;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: rgb(100, 100, 100);
+}
+
+.modal-body {
+  padding: 0;
+}
+body .form-group.error input:not([type='checkbox']),
+body .form-group.error select,
+body .form-group.error textarea {
+  background-color: rgba(255, 0, 0, 0.05);
+  border: 1px solid red;
+}
+.check {
+  display: block;
+  position: relative;
+  padding-left: 25px;
+  /* margin-bottom: 12px; */
+  padding-right: 15px;
+  cursor: pointer;
+  font-size: 16px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.check-radio {
+  display: initial;
+}
+
+.check input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+.check-radio input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  width: initial;
+  height: initial;
+}
+
+.checkmark {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  height: 18px;
+  width: 18px;
+  background-color: #fff;
+  border-color: #ced4da;
+  border-radius: 3px;
+  border-style: solid;
+  border-width: 2px;
+}
+.checkmark-radio {
+  border-radius: 50%;
+}
+
+.check input:checked ~ .checkmark:after {
+  display: block;
+}
+.check .checkmark:after {
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid;
+  border-color: #f8f9fa !important;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.check .checkmark-radio:after {
+  top: 3px;
+  left: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  border-width: initial;
+  -webkit-transform: initial;
+  -ms-transform: initial;
+  transform: initial;
+}
+.check input:checked ~ .checkmark {
+  background-color: #db4733;
+  border-color: #db4733;
+}
+.checkmark:after {
+  content: '';
+  position: absolute;
+  display: none;
+}
+
+#loginScreen {
+  background: #e2e8f0;
+  /* background-size: cover;
+  background-image: url(../../assets/hero.jpg); */
+}
+.valueContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 32px;
+}
+.text-textDarkest {
+  color: #172b4d;
+}
+.select.normal {
+  width: 100%;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  border-width: 1px;
+  border-color: #dfe1e6;
+  background-color: #f4f5f7;
+}
+.select {
+  position: relative;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  -webkit-transition: background 0.1s;
+  transition: background 0.1s;
+}
+.select.normal:hover {
+  background-color: #ebecf0;
+}
+.option.select-option-is-active {
+  background: #e8ecee;
+}
+
+.option {
+  padding: 8px 14px;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+.popover-content-scroller {
+  display: block;
+  /* overflow: auto; */
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #fff;
+  box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.popover-content-title {
+  width: 100%;
+  box-sizing: inherit;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  margin: 0;
+  padding: 8px 16px;
+  text-align: left;
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 400;
+  cursor: default;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid #f8fcff;
+}
+
+.notifications-list {
+  min-width: 320px;
+}
+
+.c-avatar--m {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  /* font-size: 13px; */
+  /* font-weight: 600; */
+}
+
+.c-avatar.c-avatar--no-img {
+  color: #fff;
+  background-color: #db4733;
+}
+
+.c-avatar {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  /* font-size: 13px; */
+  font-weight: 600;
+  display: inline-block;
+  vertical-align: middle;
+  overflow: hidden;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  text-align: center;
+  line-height: 2;
+  border-radius: 1000px;
+  -webkit-perspective: 1px;
+  perspective: 1px;
+}
+
+.c-avatar:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 1000px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+#event-feed-container #event-feed .feed-row.clickable:hover,
+#event-feed-container #event-feed .feed-row.clickable:focus {
+  background-color: rgb(56, 178, 172, 0.15);
+  /* border-bottom: 0; */
+}
+.modal-content {
+  border: 0;
+  padding: 1.25rem;
+}
+.modal-footer {
+  /* justify-content: center; */
+}
+
+tbody tr {
+  background-color: #f9f9f9;
+}
+tbody tr:hover {
+  background-color: #f9f9f9;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #fff;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin both infinite 0.7s;
+}
+
+.fadeIn {
+  animation: fadeIn 0.2s both;
+}
+
+@media screen and (min-width: 496px) {
+  #register .modal-dialog {
+    width: 50%;
+  }
+}
