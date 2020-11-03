@@ -2,10 +2,15 @@
   <div>
     <header>
       <div
-        class="relative flex px-6 justify-between items-center py-1 bg-gray-100 border-b border-gray-200"
+        class="relative flex px-6 justify-between items-center py-3 bg-gray-100 border-b border-gray-200"
       >
         <div class="flex">
-          <div class="mr-10">
+          <div>
+            <a href="" class="flex items-center justify-between px-4">
+              <img src="@/assets/logo.png" class="h-10" alt="" />
+            </a>
+          </div>
+          <!-- <div class="mr-10">
             <a
               @click="goToBoard"
               class="flex items-center justify-between px-4 py-1 bg-blue-700 text-white rounded hover:bg-blue-600"
@@ -25,11 +30,12 @@
                   ></path>
                 </svg>
               </span>
-              <span class="text-sm ml-1 font-semibold font-sans py-1"
+              <span
+                class="text-sm ml-1 font-semibold font-sans py-1 cursor-pointer"
                 >Boards</span
               >
             </a>
-          </div>
+          </div> -->
           <div class="relative -ml-2">
             <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
               <svg
@@ -67,27 +73,27 @@
             <img
               class="h-8 w-8 rounded-full object-cover"
               @click="isOpen = !isOpen"
-              :src='img'
+              :src="img"
               alt=""
             />
           </button>
           <div
-          v-if="isOpen"
-          class="absolute right-0 z-20 mt-32 mr-1 py-2 w-48 bg-gray-200 font-semibold rounded-sm boxshadow text-sm font-sans text-left"
-        >
-          <a
-            class="block px-4 py-2 text-gray-800 hover:bg-white"
-            href="#"
-            @click.prevent="goto"
-            >Profile</a
+            v-if="isOpen"
+            class="absolute right-0 z-20 mt-32 mr-1 py-2 w-48 bg-gray-200 font-semibold rounded-sm boxshadow text-sm font-sans text-left"
           >
-          <a
-            class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-            href="#"
-            @click.prevent="logout"
-            >Logout</a
-          >
-        </div>
+            <a
+              class="block px-4 py-2 text-gray-800 hover:bg-white"
+              href="#"
+              @click.prevent="goto"
+              >Profile</a
+            >
+            <a
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+              href="#"
+              @click.prevent="logout"
+              >Logout</a
+            >
+          </div>
         </div>
         <div
           :style="{ height: height }"
@@ -159,7 +165,7 @@ export default {
     },
     goto() {
       // this.$emit('to');
-      this.$router.push('/settings')
+      this.$router.push('/p/settings')
       this.isOpen = false
     },
     logout() {
@@ -168,5 +174,4 @@ export default {
     },
   }
 }
-
 </script>

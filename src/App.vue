@@ -3,20 +3,23 @@
     <router-view />
   </div>
 </template>
+<style src="./styles/styles.css"></style>
+<style src="./styles/notification.css"></style>
+<style src='./styles/quill.css'></style>
 
 <script>
 export default {
   provide: {
     searchTask() {
-      if (this.getKeyword === '') {
+      if (this.filterd === '') {
         return this.tasks
       } else {
         return this.tasks.filter(task => {
-          if (task.title.toLowerCase().includes(this.getKeyword.toLowerCase()) || 
-            task.description.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
-            task.category.name.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
-            task.startDate.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
-            task.endDate.toLowerCase().includes(this.getKeyword.toLowerCase())) {
+          if (task.title.toLowerCase().includes(this.filterd.toLowerCase()) || 
+            task.description.toLowerCase().includes(this.filterd.toLowerCase()) ||
+            task.category.name.toLowerCase().includes(this.filterd.toLowerCase()) ||
+            task.start_date.toLowerCase().includes(this.filterd.toLowerCase()) ||
+            task.end_date.toLowerCase().includes(this.filterd.toLowerCase())) {
             return task;
           }
         });
@@ -24,16 +27,16 @@ export default {
     },
     searchProject() {
       if (this.getKeyword === '') {
-        return this.cards
+        return this.projects
       } else {
-        return this.cards.filter(card => {
-          if (card.title.toLowerCase().includes(this.getKeyword.toLowerCase()) || 
-            // card.description.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
-            card.status.name.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
-            card.project_category.name.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
-            card.start_date.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
-            card.end_date.toLowerCase().includes(this.getKeyword.toLowerCase())) {
-            return card;
+        return this.projects.filter(project => {
+          if (project.title.toLowerCase().includes(this.getKeyword.toLowerCase()) || 
+            project.description.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
+            project.status.name.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
+            project.project_category.name.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
+            project.start_date.toLowerCase().includes(this.getKeyword.toLowerCase()) ||
+            project.end_date.toLowerCase().includes(this.getKeyword.toLowerCase())) {
+            return project;
           }
         });
       }

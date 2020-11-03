@@ -1,14 +1,14 @@
 <template>
-  <div class="w-full md:w-4/12 lg:w-4/12 m-auto text-left">
+  <div class="w-full md:w-4/12 lg:w-4/12 m-auto">
     <div class="bg-white p-4 mt-16">
       <div class="">
         <div class="mb-4">
-          <h3 class="font-bold text-center">Edit profilen</h3>
+          <h3 class="font-bold text-center">Edit profile</h3>
         </div>
       </div>
       <div class="update-profile">
         <div class="avatar-container">
-          <img src="img/7.jpg" class="" />
+          <img :src="checkProfile()" class="" />
         </div>
       </div>
       <div class="text-center">
@@ -16,7 +16,7 @@
         @click.prevent="openUserModal">Change photo</a>
       </div>
     </div>
-    <div class="bg-white p-4 mt-2">
+    <div class="bg-white p-4 mt-2 text-left">
       <div class="pb-8">
         <ul class="flex menus">
           <li><a href="#" :class="{ 'active': tabview === 'basic' }"
@@ -27,11 +27,12 @@
       </div>
 
       <div v-if="tabview === 'basic'">
-        <div class="formField">
+        <!-- <div class="formField">
           <label for="vorname" class="formFieldLabel">Title</label>
           <Select
             id="title"
             :value="basic.title"
+            :options="options(titles)"
             customRender
             searchable
             @change="setFieldValue('title', $event)"
@@ -44,25 +45,24 @@
               </div>
             </template>
           </Select>
-        </div>
-
+        </div> -->
         <div class="formField">
-          <label class="formFieldLabel" for="first name">first name</label>
+          <label class="formFieldLabel" for="first_name">First name</label>
           <Input
-            aria-label="first name"
+            aria-label="first_name"
             icon=""
-            :value="basic.lastName"
-            @input="v => (basic.lastName = v)"
+            :value="basic.last_name"
+            @input="v => (basic.last_name = v)"
           />
         </div>
 
         <div class="formField">
-          <label class="formFieldLabel" for="Last nam">Last name</label>
+          <label class="formFieldLabel" for="last_name">Last name</label>
           <Input
-            aria-label="Last nam"
+            aria-label="last_name"
             icon=""
-            :value="basic.firstName"
-            @input="v => (basic.firstName = v)"
+            :value="basic.first_name"
+            @input="v => (basic.first_name = v)"
           />
         </div>
 
@@ -86,15 +86,15 @@
       <div v-if="tabview === 'password'">
         <Message v-if="typeof localError === 'string'" :message="localError" :success="false" />
         <div class="formField">
-          <label class="formFieldLabel" for="oldPassword">Old password</label>
+          <label class="formFieldLabel" for="old_password">Old password</label>
           <Input
-            aria-label="oldPassword"
+            aria-label="old_password"
             icon=""
             type="password"
-            :value="form.oldPassword"
-            @input="v => (form.oldPassword = v)"
+            :value="form.old_password"
+            @input="v => (form.old_password = v)"
           />
-          <div class="formFieldTip formFieldTipError" v-if="errors['oldPassword']">{{ errors['oldPassword'] }}</div>
+          <div class="formFieldTip formFieldTipError" v-if="errors['old_password']">{{ errors['old_password'] }}</div>
         </div>
 
         <div class="formField">
@@ -128,43 +128,202 @@
       </div>
     </div>
     <SnackbarRoot />
-    <ModalRoot @closeModal="closeUploadModal" :width="300" />
+    <!-- <ModalRoot @closeModal="closeUploadModal" :width="300" /> -->
   </div>
 </template>
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import Input from '@/components/shared/Input/Input.vue'
-import Button from '@/components/shared/Button/Button.vue'
-import Message from '@/components/collection/Message.vue'
+import eventBus from '@/eventBus'
+import Alert from '@/components/collection/Alert.vue'
 import SnackbarRoot from '@/components/collection/SnackbarRoot.vue'
+import Button from '@/components/shared/Button/Button.vue'
+// import Select from '@/components/shared/Select/Select.vue'
+// import UploadPhoto from '@/components/modals/UploadPhoto.vue'
+// import ModalRoot from '@/components/modals/ModalRoot.vue'
+import { BASE_URL_IMAGE_PATH } from '@/config'
+import DefaultProfile from '@/assets/avatar.png'
+import Message from '@/components/collection/Message.vue'
+import { userInfoService } from '../services/storageService';
+import { strongPassword, isRequired } from '../utils'
+
 export default {
   name: 'Settings',
   components: {
+    SnackbarRoot,
     Button,
+    // UploadPhoto,
+    // ModalRoot,
     Input,
-    Message,
-    SnackbarRoot
+    // Select,
+    Message
   },
   data() {
     return {
       basic: {
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         email: '',
       },
       form: {
         c_password: '',
-        oldPassword: '',
+        old_password: '',
         password: '',
       },
       photoId: '',
       img: '',
       showUploadModal: false,
       tabview: 'basic',
-      statuses: ['employed', 'unemployed'],
-      titles: ['Divers', 'Herr', 'Frau'],
+      localError: '',
       passwordLength: 8,
+      loading: false,
+      errors: {}
     }
-  }
+  },
+  created() {
+    this.getProfile()
+  },
+  watch: {
+    error: function(msg) {
+      this.localError = msg
+      this.setHints()
+    },
+  },
+  computed: {
+    ...mapGetters(['getUser']),
+    ...mapGetters('mainStore', ['error']),
+    options() {
+      return items =>
+        items.map(item => ({
+          label: item,
+          value: item,
+          item,
+        }))
+    },
+    isValidPasswordDTO() {
+      return strongPassword(this.form.c_password) &&
+      isRequired(this.form.password) &&
+      this.samePassword() 
+    },
+    isValidUserDTO() {
+      return isRequired(this.basic.first_name) && isRequired(this.basic.last_name)
+    },
+    isWorking() {
+      return this.loading
+    },
+  },
+  methods: {
+    ...mapActions('mainStore', ['update', 'getEntry']),
+    ...mapActions(['setUser', 'logout']),
+    setFieldValue(type, value) {
+      this.basic[type] = value
+    },
+    setHints() {
+      if (typeof this.localError === 'object') {
+        this.localError.forEach(item => {
+          this.errors[item.context.key] = item.message
+        })
+      }
+    },
+    dateFormat(date) {
+      return date
+    },
+    async getProfile() {
+      const user = await this.getEntry({
+        url: 'users/profile',
+        method: 'GET',
+        data: {}
+      })
+      if (user) {
+        this.basic = user
+        this.basic.birthDate = this.dateFormat(user.birthDate)
+      }
+    },
+    excludeFields(form) {
+      const excludes = [
+        '_id',
+        'createdAt',
+        'updatedAt',
+        'email',
+        'profileCompleted',
+        'role',
+        'isActive',
+        'avatar',
+        '__v',
+      ]
+      if (this.getUser.role === 'admin') {
+        excludes.push('title')
+      }
+      const copyForm = {}
+      for (const key in form) {
+        if (excludes.indexOf(key) === -1) {
+          copyForm[key] = form[key]
+        }
+      }
+      return copyForm
+    },
+    samePassword() {
+      return this.form.password === this.form.c_password
+    },
+    // openUserModal() {
+    //   eventBus.$emit('openModalRoot', {
+    //     component: UploadPhoto,
+    //     title: 'Profilbild',
+    //   })
+    // },
+    // closeUploadModal() {
+    //   this.showUploadModal = false
+    // },
+    async handlePasswordChange() {
+      this.loading = true
+      const updated = await this.update({
+        url: `users/change/password`,
+        method: 'PUT',
+        data: {
+          new_password: this.form.password,
+          old_password: this.form.old_password,
+        }
+      })
+      if (updated) {
+        this.form.password = ''
+        this.form.old_password = ''
+        this.form.c_password = ''
+        this.showAlert('Password updated', 'success')
+      }
+       this.loading = false
+    },
+    async handleUpdateUser() {
+      const updated = await this.update({
+        url: `users/update/profile`,
+        method: 'PUT',
+        data: this.excludeFields(this.basic)
+      })
+      if (updated) {
+        const user = { ...this.getUser }
+        user.first_name = this.basic.first_name
+        user.last_name = this.basic.last_name
+
+        this.setUser(user)
+        userInfoService.saveUser(user);
+        this.showAlert('Profile updated', 'success')
+      }
+    },
+    showAlert(msg, type, duration = 5000, isAlert = true) {
+      eventBus.$emit('open', {
+        component: isAlert ? Alert : null,
+        props: {
+          text: msg,
+          type,
+        },
+        duration,
+      })
+    },
+    checkProfile() {
+      return this.getUser && this.getUser.avatar
+        ? `${BASE_URL_IMAGE_PATH}/${this.getUser.avatar}`
+        : DefaultProfile
+    },
+  },
 }
 </script>
 <style lang="postcss" scoped>

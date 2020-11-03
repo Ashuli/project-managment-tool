@@ -1,98 +1,148 @@
 <template>
-  <div class="h-screen overflow-hidden">
-    <nav-bar @value='(val) => value = val' />
-    <add-project @add='add' @hide='hide' :top="top" :height='height' />
-    <div style="border-bottom: 2px solid #edf2f7; border-top: 2px solid #edf2f7;" class="flex-shrink-0 bg-white border-b-2 border-gray-200">
-      <nav-pro @add-project='addProject' />
+  <div class="h-screen overflow-hidden bg-gray-100">
+    <nav-pro />
+    <div class="flex justify-end mt-24 mr-12">
+      <button
+        class="flex items-center px-2 py-1 text-sm font-normal text-gray-200 bg-gray-800 rounded hover:bg-gray-700"
+        @click="openModal"
+      >
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+          <path fill="fff" d="M0 oh24v24H0z"></path>
+          <path
+            d="M12 7v10m5-5H7"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+        <span>Add project</span>
+      </button>
     </div>
-    <div class="h-full w-full flex-wrap content-start pt-3 justify-start flex-1 min-w-0 flex bg-gray-100">
-      <card-board v-for="card in searchProject()" :key='card.title' width='20rem' :card='card' />
+    <div class="flex ml-8 flex-wrap">
+      <card-board
+        @deleteProject="triggerDelete"
+        @updateProject="updateProject"
+        v-for="card in searchProject()"
+        :key="card.title"
+        width="20rem"
+        :card="card"
+        :entries="options"
+      />
+    </div>
+    <div class="flex flex-col items-center my-16 px-8">
+      <SnackbarRoot />
     </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import NavBar from '@/components/shared/NavBar/NavBar.vue'
-import CardBoard from '@/components/shared/Card/CardBoard.vue'
-import NavPro from '@/components/NavPro.vue'
-import AddProject from '@/components/modals/AddProject.vue'
-import { mapGetters } from 'vuex';
+import CardBoard from '@/components/Card/CardBoard.vue'
+import { mapActions, mapGetters } from 'vuex'
+import NavPro from '../components/NavPro.vue'
+import eventBus from '../eventBus'
+import Alert from '../components/collection/Alert.vue'
+import SnackbarRoot from '../components/collection/SnackbarRoot.vue'
+
 export default {
   name: 'Boards',
+  inject: ['searchProject'],
+  props: ['filterd'],
   components: {
-    NavBar,
     CardBoard,
-    NavPro,
-    AddProject
+    SnackbarRoot,
+    NavPro
   },
   data() {
-    return {
-      value: '',
-      top: '-100%',
-      height: 0,
-      // cards: [
-      //   {
-      //     id: 1,
-      //     title: 'Contract Generator',
-      //     img: '/img/7.jpg',
-      //     description: 'Add job category tods tasks and boards ',
-      //     startDate: 'Sep 14',
-      //     endDate: ' Sep 30',
-      //     project_catagories: 'Category',
-      //     status: true
-      //   },
-      //   {
-      //     id: 2,
-      //     title: 'Project Management',
-      //     img: '/img/7.jpg',
-      //     description: 'Add job category tods tasks and boards ',
-      //     startDate: 'Sep 14',
-      //     endDate: ' Sep 20',
-      //     project_catagories: 'Category',
-      //     status: true
-      //   },
-      //   {
-      //     id: 3,
-      //     title: 'Testing',
-      //     img: '/img/7.jpg',
-      //     description: 'Add job category tods tasks and boards ',
-      //     startDate: 'Sep 14',
-      //     endDate: ' Sep 20',
-      //     project_catagories: 'Category',
-      //     status: true
-      //   }
-      // ]
-    }
+      return {
+          keyword: '',
+          filter: '',
+          selectedProject: {},
+      }
   },
-  inject: ['searchProject'],
   computed: {
-    getKeyword() {
-      return this.value;
+    ...mapGetters('mainStore', ['projects']),
+    filteredprojects() {
+      const filter = this.filter.toLowerCase()
+      return this.projects.filter(item => {
+        for (const key in item) {
+          if (
+            typeof item[key] === 'string' &&
+            item[key].toLowerCase().indexOf(filter) !== -1
+          ) {
+            return true
+          }
+        }
+        return false
+      })
     },
-    ...mapGetters({
-      cards: 'getProjects'
-    })
+    getKeyword() {
+      this.keyword = this.filterd;
+      return this.keyword;
+    },
+    options() {
+      return this.filteredprojects.map(entry => ({
+        category: entry.project_category.name,
+        title: entry.title,
+        description: entry.description,
+        start_date: entry.start_date,
+        end_date: entry.end_date,
+        status: entry.status.name,
+        entry
+      }))
+    }
   },
   methods: {
-    addProject() {
-      this.top = '0';
-      this.height = '100%';
-      return false;
+     newDate(date){
+      return new Date(date).getMonth() + ' - ' + new Date(date).getDay();
     },
-    hide(el) {
-      console.log(el.id);
-      if (el.id === 'top' || el.id === 'btn') {
-          this.top = '-100%';
-          this.height = 0;
-        }
+    ...mapActions('mainStore', ['get', 'delete', 'setCurrentProject']), // check it
+    async getprojects() {
+      await this.get({
+        url: 'projects',
+        method: 'GET',
+        mutation: 'setProjects',
+        data: {},
+      })
     },
-    add(project) {
-        this.cards.push(project)
-    }
+    triggerDelete(entry) {
+      this.selectedProject = entry
+      eventBus.$emit('toggle-delete-project', true)
+    },
+    async deleteProject(entry) {
+      const deleted = await this.delete({
+        url: `projects/${this.selectedProject.id}`,
+        method: 'DELETE',
+        data: {}
+      })
+      if (deleted) {
+          this.showAlert('Delete :) .', 'success')
+          this.getprojects()
+      }
+
+      eventBus.$emit('toggle-delete-project', false)
+    },
+    openModal() {
+      this.setCurrentProject(null)
+      eventBus.$emit('toggle-create-project', this.getprojects)
+    },
+    updateProject(entry) {
+      this.setCurrentProject(entry)
+      eventBus.$emit('toggle-project-update', this.getprojects)
+    },
+    showAlert(msg, type, duration = 5000, isAlert = true) {
+      eventBus.$emit('open', {
+        component: isAlert ? Alert : null,
+        props: {
+          text: msg,
+          type,
+        },
+        duration,
+      })
+    },
   },
   created() {
-    this.$store.dispatch('getProjects')
+      this.getprojects()
+      eventBus.$on('confirm-delete-project', this.deleteProject)
   }
 }
 </script>

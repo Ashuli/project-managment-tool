@@ -1,42 +1,142 @@
 <template>
   <div class="flex flex-wrap container mt-4">
     <List v-for="(entry, i) in entries" :key="i" :entry="entry">
-      <template v-slot:default="{
-         name, description, avatar, handlers, cost, entry,
-         status, statusColors, contributors, type, level,
-          rate, date, discount, catalogName
-        }">
+      <template
+        v-slot:default="{
+          name,
+          description,
+          avatar,
+          handlers,
+          entry,
+          code,
+          first_name,
+          last_name,
+          status,
+          statusColors,
+          contributors,
+          type,
+          level,
+          category,
+          rate,
+          start_date,
+          end_date,
+          date,
+          order,
+          catalogName,
+          cost,
+          title,
+          email
+        }"
+      >
         <div class="px-4 py-2 flex items-center w-full">
           <div class="flex" v-if="avatar">
             <Avatar :size="avatarSize" :avatarUrl="avatar" :name="'label'" />
           </div>
-          <div class="flex flex-col px-3 text-textMedium mr-16 text-13 truncate">
-            <h4 v-if="name" class="text-textMedium text-15 font-bold flex items-center">
-              <span>{{ name }}</span> <span class="px-2" v-if="level">-</span> <span class="text-sm font-normal text-textLight" v-if="level">{{ level }}</span>
-              <span class="block mx-2 rounded-full h-1 w-1 bg-textLight" v-if="catalogName"></span> <span class="text-sm font-normal text-textLight" v-if="catalogName">{{ catalogName }}</span>
+          <div
+            class="flex flex-col px-3 text-textMedium mr-16 text-13 truncate"
+          >
+            <h4
+              v-if="name"
+              class="text-textMedium text-15 font-bold flex items-center"
+            >
+              <span>{{ name }}</span> <span class="px-2" v-if="level">-</span>
+              <span class="text-sm font-normal text-textLight" v-if="first_name">{{
+                level
+              }}</span>
+              <span
+                class="block mx-2 rounded-full h-1 w-1 bg-textLight"
+                v-if="catalogName"
+              ></span>
+              <span
+                class="text-sm font-normal text-textLight"
+                v-if="catalogName"
+                >{{ catalogName }}</span
+              >
+            </h4>
+            <div class="flex">
+              <h4
+                v-if="first_name"
+                class="text-textMedium text-15 font-bold flex items-center mr-2"
+              >
+                <span>{{ first_name }}</span>
+                <span class="px-2" v-if="level">-</span>
               </h4>
-            <span v-if="description" class="text-13 flex items-center"><small v-if="rate">
-              <ul class="flex pr-2">
-                <li v-for="count of 5" :key="count">
-                  <Icon :name="'star'" :class="{ 'text-primary': count <= rate }"/>
-                </li>
-                <!-- <li class="pl-2">({{ numberOfRates }})</li> -->
-              </ul>
-            </small>{{ description }}</span>
+              <h4
+                v-if="last_name"
+                class="text-textMedium text-15 font-bold flex items-center"
+              >
+                <span>{{ last_name }}</span>
+                <span class="px-2" v-if="level">-</span>
+              </h4>
+            </div>
+            <h3
+              v-if="title"
+              class="text-textMedium text-15 font-bold flex items-center"
+            >
+              <span>{{ title }}</span> <span class="px-2" v-if="level">-</span>
+            </h3>
+            <span v-if="description" class="text-13 flex items-center mt-1"
+              ><small v-if="rate">
+                <ul class="flex pr-2">
+                  <li v-for="count of 5" :key="count">
+                    <Icon
+                      :name="'star'"
+                      :class="{ 'text-primary': count <= rate }"
+                    />
+                  </li>
+                  <!-- <li class="pl-2">({{ numberOfRates }})</li> -->
+                </ul> </small
+              >{{ description }}</span
+            >
+            <div class="flex">
+              <span v-if="start_date" class="text-13 flex items-center mt-1"
+                ><small v-if="rate">
+                  <ul class="flex pr-2">
+                    <li v-for="count of 5" :key="count">
+                      <Icon
+                        :name="'star'"
+                        :class="{ 'text-primary': count <= rate }"
+                      />
+                    </li>
+                    <!-- <li class="pl-2">({{ numberOfRates }})</li> -->
+                  </ul> </small
+                >{{ end_date }}</span
+              >
+              <span v-if="end_date" class="text-13 flex items-center mt-1 mx-4"
+                ><small v-if="rate">
+                  <ul class="flex pr-2">
+                    <li v-for="count of 5" :key="count">
+                      <Icon
+                        :name="'star'"
+                        :class="{ 'text-primary': count <= rate }"
+                      />
+                    </li>
+                    <!-- <li class="pl-2">({{ numberOfRates }})</li> -->
+                  </ul> </small
+                >{{ end_date }}</span
+              >
+            </div>
           </div>
           <div class="flex items-center ml-auto">
             <div class="px-4" v-if="date">
-              <span class="whitespace-no-wrap text-13">{{ date }}
-              </span>
+              <span class="whitespace-no-wrap text-13">{{ date }} </span>
             </div>
             <div class="px-4" v-if="cost || cost === 0">
               <div class="flex" v-if="discount && Object.keys(discount).length">
-                <span class="whitespace-no-wrap text-13 px-2 line-through">{{ cost ? cost + ' EUR': 'Free' }}</span>
-                <span class="cost whitespace-no-wrap font-bold text-textMedium text-13">
-                  {{ discount.newCost ? discount.newCost + ' EUR': 'Free' }}
+                <span class="whitespace-no-wrap text-13 px-2 line-through">{{
+                  cost ? cost + " EUR" : "Free"
+                }}</span>
+                <span
+                  class="cost whitespace-no-wrap font-bold text-textMedium text-13"
+                >
+                  {{ discount.newCost ? discount.newCost + " EUR" : "Free" }}
                 </span>
               </div>
-              <span v-if="!discount" class="cost whitespace-no-wrap font-bold text-textMedium text-13">{{ cost ? cost + ' EUR': 'Free' }}</span>
+              <span
+                v-if="!discount"
+                class="cost whitespace-no-wrap font-bold text-textMedium text-13"
+                >{{ cost ? cost + " EUR" : "Free" }}</span
+              >
             </div>
             <div v-if="contributors" class="flex flex-row mr-1">
               <div
@@ -47,21 +147,39 @@
                 <Avatar
                   v-if="i < 5"
                   class="cursor-pointer select-none shadow-outline-white"
-                  :name="contributor.firstName"
+                  :name="contributor.first_name"
                   :size="24"
                   :avatarUrl="contributor.path"
                   :title="checkMe(contributor)"
                 />
               </div>
             </div>
-            <div class="px-2" v-if="type">
+            <div class="px-2 w-15" v-if="email">
+              <Badge :name="email">{{ email }}</Badge>
+            </div>
+            <div class="px-2 w-15" v-if="code">
+              <Badge :name="code" class="uppercase">{{ code }}</Badge>
+            </div>
+            <div class="px-2 w-24" v-if="type">
               <Badge :name="type" class="uppercase">{{ type }}</Badge>
+            </div>
+            <div class="px-2" v-if="order">
+              <Badge :name="order" class="uppercase">{{ order }}</Badge>
             </div>
             <div class="px-2" v-if="status">
               <Badge :color="statusColors" :name="status">{{ status }}</Badge>
             </div>
+            <div class="px-2" v-if="category">
+              <Badge :color="statusColors" :name="category">{{
+                category
+              }}</Badge>
+            </div>
             <div v-if="handlers" class="flex pl-2">
-              <span v-for="(handler, i) of handlers" :title="handler.title" :key="i">
+              <span
+                v-for="(handler, i) of handlers"
+                :title="handler.title"
+                :key="i"
+              >
                 <Icon
                   @click="$emit(handler.name, entry)"
                   class="text-textLight cursor-pointer ml-2"
@@ -79,22 +197,22 @@
 
 <script>
 import List from './List.vue'
-// import Icon from '../shared/Icon/Icon.vue'
-// import Avatar from '../shared/Avatar/Avatar.vue'
-// import Badge from '../shared/Badge/Badge.vue'
+import Icon from '../shared/Icon/Icon.vue'
+import Avatar from '../shared/Avatar/Avatar.vue'
+import Badge from '../shared/Badge/Badge.vue'
 import { mapGetters } from 'vuex'
 
 export default {
   components: {
     List,
-    // Icon,
-    // Avatar,
-    // Badge
+    Icon,
+    Avatar,
+    Badge
   },
   props: {
     entries: {
       type: Array,
-      default: []
+      default: () => []
     },
     avatarSize: {
       type: Number,
@@ -107,7 +225,7 @@ export default {
   methods: {
     checkMe(contributor) {
       return contributor._id === this.getUser._id ?
-       'You': contributor.firstName + ' ' + contributor.lastName
+       'You' : contributor.first_name + ' ' + contributor.last_name
     }
   },
 }

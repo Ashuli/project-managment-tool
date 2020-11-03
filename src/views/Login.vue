@@ -1,89 +1,103 @@
 <template>
-  <div class="flex h-screen bg-gray-100">
-    <div
-      class="max-w-sm p-8 m-auto bg-white rounded shadow-lg md:w-full text-left"
+  <div id="loginScreen" class="mt-24">
+    <form
+      @submit.prevent="handleSubmit"
+      class="flex
+    px-6
+     justify-center items-center h-full text-left"
     >
-      <form @submit.prevent="handleSubmit">
-        <div class="modal-header pb-3 mb-2 flex">
-          <div class="m-auto">
-            <img :src="logoPath" />
+      <div class="modal-dialog" role="document">
+        <div class="modal-content p-4">
+          <div class="modal-header pb-3 mb-2 flex">
+            <div class="m-auto">
+              <img :src="logoPath" />
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="block">
+              <Message v-if="typeof localError === 'string'" :message="localError" :success="false" />
+            </div>
+
+            <div class="formField">
+              <label class="formFieldLabel" for="email">E-mail address</label>
+              <Input
+                aria-label="email"
+                :value="form.email"
+                @input="v => (form.email = v)"
+              />
+            </div>
+            <div class="formField">
+              <label for="passwort" class="formFieldLabel">Password</label>
+                <Input
+                  aria-label="passwort"
+                  type="password"
+                  :value="form.password"
+                  @input="v => (form.password = v)"
+                />
+            </div>
+            <div class="form-group">
+              <a
+                title
+                class="inline-block cursor-pointer
+                    align-baseline font-bold
+                    text-sm text-teal-500 hover:text-teal-800"
+                @click.prevent="gotoForgotPassword"
+              >
+                Password forgotten?
+              </a>
+            </div>
+            <div class="py-2 mt-2">
+              <!-- <span class="text-textMedium text-13"
+                >The fields marked with an asterisk * are
+                Mandatory fields.</span
+              > -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="text-center">
+              <Button
+                class="w-full"
+                type="submit"
+                :variant="'primary'"
+                :isWorking="isWorking"
+                :disabled="$v.form.$invalid"
+              >
+                Login
+              </Button>
+            </div>
           </div>
         </div>
-        <div class="block">
-        </div>
-        <div>
-          <label
-            class="block mb-2 text-sm font-medium text-gray-800"
-            for="email"
-            >Email</label
-          >
-          <Input
-            aria-label="email"
-            placeholder="Email"
-            :value="form.email"
-            @input="(v) => (form.email = v)"
-            class="w-full mb-4 text-xs text-gray-800 bg-gray-200 border rounded focus:bg-white"
-          />
-        </div>
-        <div>
-          <label
-            class="block mb-2 text-sm font-medium text-gray-800"
-            for="password"
-            >Password</label
-          >
-          <Input
-            class="w-full mb-4 text-xs text-gray-800 bg-gray-200 border rounded focus:bg-white"
-            aria-label="passwort"
-            type="password"
-            :value="form.password"
-            @input="(v) => (form.password = v)"
-          />
-        </div>
-        <div class="mt-8">
-          <button
-            class="w-full px-4 py-2 mb-4 text-sm font-medium text-white bg-blue-800 rounded hover:bg-blue-700"
-            type="submit"
-            :disabled="$v.form.$invalid"
-          >
-            Sign In
-          </button>
-        </div>
-      </form>
-      <footer>
-        <button
-          class="float-right text-sm text-blue-800 hover:text-blue-700"
-          @click="gotoForgotPassword"
-          >Forgot Password?</button
-        >
-      </footer>
-    </div>
+      </div>
+    </form>
   </div>
 </template>
-
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import { required, email } from 'vuelidate/lib/validators'
-// import Message from '@/components/collection/Message.vue'
+import Message from '@/components/collection/Message.vue'
 import Input from '@/components/shared/Input/Input.vue'
+import Button from '@/components/shared/Button/Button.vue'
 import Logo from '@/assets/logo.png'
 import Vue from 'vue'
 import Vuelidate from 'vuelidate'
 Vue.use(Vuelidate)
 
 export default {
-  name: 'login', 
+  name: 'Login',
   components: {
+    Message,
     Input,
-    // Message
+    Button,
   },
   data() {
     return {
       form: {
-       email: '',
-       password: ''
+        password: '',
+        email: '',
       },
-      logoPath: Logo,
       loading: false,
-      // localError: '',
+      logoPath: Logo,
+      localError: '',
       errors: {}
     }
   },
@@ -91,42 +105,72 @@ export default {
     error: function(msg) {
       this.localError = msg
       this.setHints()
-    }
+    },
+  },
+  computed: {
+    ...mapGetters(['error']),
+    isWorking() {
+      return this.loading
+    },
   },
   methods: {
+    ...mapActions(['login']),
+    setHints() {
+      if (typeof this.localError === 'object') {
+        this.localError.forEach(item => {
+          this.errors[item.context.key] = item.message
+        })
+      }
+    },
     async handleSubmit() {
-      await this.$store.dispatch('retrieveToken', {
+      this.loading = true
+      this.$v.form.$touch()
+      if (this.$v.form.$pending || this.$v.form.$error) return
+      const success = await this.login({
         email: this.form.email,
-        password: this.form.password
-      });
-      if(!localStorage.getItem('access_token')){
-        this.$store.state.errorMsg = 'Incorrect Email/Password';
-      }else{
-        this.$router.push('/boards');
-      } 
-  },
-      gotoForgotPassword() {
-        this.$router.push('/forgot-password')
+        password: this.form.password,
+      })
+      if (success) {
+        this.$router.push('/p')
+      }
+      this.loading = false
+    },
+    gotoForgotPassword() {
+      this.$router.push('/forgot-password')
     }
-},
+  },
   validations: {
     form: {
       email: {
         required,
-        email
+        email,
       },
       password: {
-        required
-      }
-    }
-  }
+        required,
+      },
+    },
+  },
 }
 </script>
-<style scoped>
- .error{
-   @apply text-xs text-left text-red-500 -mt-4 mb-4;
- }
- .errmsg{
-   @apply text-xs text-red-500 mb-4;
- }
+<style lang="postcss" scoped>
+.form-group {
+  @apply mt-5;
+}
+</style>
+<style lang="postcss" scoped>
+.formField {
+  @apply mt-5;
+}
+.sep {
+  @apply mt-5 border border-backgroundLightest;
+}
+.formFieldLabel {
+  @apply block pb-1-25 text-textMedium text-13 font-medium;
+}
+.formFieldTip {
+  @apply pt-1-5 text-textMedium text-13;  
+}
+.formFieldTipError {
+  @apply text-primary
+}
 </style>

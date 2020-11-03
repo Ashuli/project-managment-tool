@@ -1,6 +1,6 @@
 
 import Color from 'color'
-// import { userInfoService } from './services/storageService'
+import { userInfoService } from './services/storageService'
 
 export function partition(array, n) {
   const copy = array.slice()
@@ -10,10 +10,10 @@ export function capitilize(word) {
   return word.charAt(0).toUpperCase() + word.substr(1)
 }
 
-// export function getUserRole() {
-//   const user = userInfoService.getUser()
-//   return user ? user.role : ''
-// }
+export function getUserRole() {
+  const user = userInfoService.getUser()
+  return user ? user.role : ''
+}
 
 export const tuneColor = {
   /* eslint-disable implicit-arrow-linebreak */

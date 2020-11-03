@@ -9,8 +9,15 @@ import Verify from '../views/Verify.vue'
 import Settings from '../views/Settings.vue'
 import Unauthorized from '@/views/Unauthorized.vue'
 import Dashboard from '@/views/Dashboard.vue'
-import User from '@/views/CreateUser.vue'
-import Profile from '@/components/forms/ProfileEdit.vue'
+import Users from '@/views/User.vue'
+import Status from '@/views/Status.vue'
+import VerifyEmail from '@/views/VerifyEmail.vue'
+import TaskCategory from '@/views/TaskCategory.vue'
+import ProjectCategory from '@/views/ProjectCategory.vue'
+import Roles from '@/views/Roles.vue'
+import DocumentType from '@/views/DocumentType.vue'
+import Entry from '@/views/Entry.vue'
+import Message from '@/components/collection/Message.vue'
 
 Vue.use(VueRouter)
 
@@ -36,7 +43,7 @@ Vue.use(VueRouter)
 // ];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes: [
     {
@@ -55,6 +62,11 @@ const router = new VueRouter({
       component: Verify
     },
     {
+      path: '/verify-email', // temporary
+      name: 'VerifyEmail',
+      component: VerifyEmail
+    },
+    {
       path: '/forgot-password',
       name: 'Password',
       component: Password
@@ -69,31 +81,61 @@ const router = new VueRouter({
       name: 'Dashboard',
       component: Dashboard
     },
+    // {
+    //   path: '/add-project',
+    //   name: 'AddProject',
+    //   component: AddProject
+    // },
     {
-      path: '/create-user',
-      name: 'User',
-      component: User
+      path: '/p',
+      component: Entry,
+      children: [
+        {
+          path: '',
+          component: Boards,
+        }, 
+        {
+          path: '/task/:title',
+          component: Task
+        },
+        {
+          path: 'settings',
+          component: Settings
+        },
+        {
+          path: 'status',
+          component: Status
+        },
+        {
+          path: 'task-category',
+          component: TaskCategory
+        },
+        {
+          path: 'project-category',
+          component: ProjectCategory
+        },
+        {
+          path: 'roles',
+          component: Roles
+        },
+        {
+          path: 'document-type',
+          component: DocumentType
+        },
+        {
+          path: 'users',
+          component: Users
+        },
+        // {
+        //   path: 'profile',
+        //   component: Profile
+        // },
+        {
+          path: 'message',
+          component: Message
+        }
+      ]
     },
-    {
-      path: '/boards',
-      name: 'Boards',
-      component: Boards
-    },
-    {
-      path: '/task/:title',
-      name: 'Task',
-      component: Task
-    },
-    {
-      path: '/settings',
-      name: 'Settings',
-      component: Settings
-    },
-    {
-      path: '/profile',
-      name: 'Profile',
-      component: Profile
-    }
   ]
 })
 

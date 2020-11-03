@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex">
+  <div class="relative flex text-sm -mr-5">
     <div class="flex items-center">
       <button
         @click="isOpen = !isOpen"
@@ -7,7 +7,7 @@
         :style="getStyles"
       >
       
-        <img class="h-full w-full object-cover" src="img/7.jpg" alt="Profile image" />
+        <img class="h-full w-full object-cover" :src="img" alt="Profile image" />
       </button>
       <Icon
           :size="12"
@@ -23,15 +23,15 @@
       class="fixed inset-0 h-full z-10 w-full cursor-default outline-none focus:outline-none"></button>
     <div
       v-if="isOpen"
-      class="absolute right-0 z-20 mt-12 py-2 w-48 bg-white rounded-sm boxshadow">
+      class="absolute right-0 z-20 mt-12 py-2 w-48 bg-white rounded-sm boxshadow text-left font-sans">
       <a
         class="block px-4 py-2 text-gray-800
-       hover:bg-gray-100"
+       hover:bg-secondary rounded-lg cursor-pointer" 
         @click.prevent="goto"
         >View profile</a>
       <a
         class="block px-4 py-2 text-gray-800
-       hover:bg-gray-100"
+        hover:bg-secondary rounded-lg cursor-pointer"
         @click.prevent="logout"
         >Log off</a>
     </div>
@@ -40,7 +40,7 @@
 
 <script>
 import { buttonVariants } from '@/utils'
-// import Icon from '@/components/shared/Icon/Icon.vue'
+import Icon from '@/components/shared/Icon/Icon.vue'
 
 export default {
   components: {
@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     goto() {
-      this.$router.push('/settings')
+      this.$router.push('/p/settings')
       this.isOpen = false
     },
     logout() {
@@ -85,3 +85,14 @@ export default {
   },
 };
 </script>
+<style lang="postcss" scoped>
+.primary {
+  background: var(--primary);
+}
+.circle {
+  border-color: var(--primary);
+}
+.boxshadow {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+</style>

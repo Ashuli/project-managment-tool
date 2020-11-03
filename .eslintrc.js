@@ -11,6 +11,7 @@ module.exports = {
     parser: 'babel-eslint'
   },
   rules: {
+    'no-extra-parens': 0,
     'dot-notation': 0,
     'spaced-comment': 0,
     'eol-last': 0,
